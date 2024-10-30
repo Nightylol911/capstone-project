@@ -1,0 +1,29 @@
+# Docker-specific files
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker*
+
+# Version control
+.git
+.gitignore
+.github
+
+README.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+*.old
+
+# Build and dependencies
+node_modules/
+dist/
+build/
+*.log

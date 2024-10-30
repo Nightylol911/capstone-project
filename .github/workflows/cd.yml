@@ -1,0 +1,70 @@
+name: Deploy image to self-hosted server
+
+on:
+  workflow_run: 
+    workflows: ["CI Pipeline"]
+    types:
+      - completed    
+
+env:
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+  SSH_USER: ${{ secrets.SSH_USERNAME }}
+  SSH_NODE_1: ${{ secrets.NODE_1 }}
+  SSH_NODE_2: ${{ secrets.NODE_2 }}
+
+jobs:
+  deploy1:
+    runs-on: self-hosted
+    steps:
+      - name: Deploying to server 1
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > myKey1.pem
+          chmod 600 myKey1.pem
+          ssh -i myKey1.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.NODE_1 }} << 'EOF'
+          set -e
+          cd /capstone-project
+          git pull https://github.com/Nightylol911/capstone-project.git
+          docker compose up -d --build
+          rm -f myKey1.pem
+          EOF
+  deploy2:
+    runs-on: self-hosted
+    steps:
+      - name: Deploying to server 2
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > myKey2.pem
+          chmod 600 myKey2.pem
+          ssh -i myKey2.pem ${{ secrets.SSH_USERNAME }}@$${{ secrets.NODE_2 }} << 'EOF'
+          set -e
+          cd /capstone-project
+          git pull https://github.com/Nightylol911/capstone-project.git
+          docker compose up -d --build
+          rm -f myKey2.pem
+          EOF
+# on:
+#   workflow_run:
+#     workflows: ["CI Pipeline"]
+#     branches: [main]
+#     types: 
+#       - completed
+
+# jobs:
+#   deploy:
+#     runs-on: self-hosted
+#     strategy:
+#       matrix:
+#         servers: ["10.0.2.202", "10.0.2.201"]
+    
+#     steps:
+#       - name: Deploying docker image to ${{ matrix.servers }}
+#         env:
+#           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+#           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+#         run: |
+#               ssh-keyscan -H ${{ matrix.servers }} >> ~/.ssh/known_hosts
+#               echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+#               chmod 600 ~/.ssh/ssh_key
+#               ssh -i ~/.ssh/ssh_key $SSH_USERNAME@${{ matrix.servers }} "
+#               docker compose pull nightylol/flask-app && 
+#               docker compose up -d nightylol/flask-app && 
+#               docker image prune -f"
