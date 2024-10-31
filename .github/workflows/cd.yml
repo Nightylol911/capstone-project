@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_KEY }}" > myKey2.pem
           chmod 600 myKey2.pem
-          ssh -i myKey2.pem ${{ secrets.SSH_USERNAME }}@$${{ secrets.NODE_2 }} << 'EOF'
+          ssh -i myKey2.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.NODE_2 }} << 'EOF'
           set -e
           cd /capstone-project
           git pull https://github.com/Nightylol911/capstone-project.git
