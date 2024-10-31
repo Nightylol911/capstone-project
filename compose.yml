@@ -4,13 +4,13 @@ networks:
 
 services:
   flask-app:
-    build: .
+    build: .  # Build the Docker image from the current directory
     container_name: flask-app
     networks:
       - my-network
     ports:
       - "80:5000"
-    environment:
+    environment:  # Set the Redis environment variables
       - REDIS_HOST=redis
       - DB_HOST=db
       - DB_USER=user

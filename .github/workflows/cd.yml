@@ -18,9 +18,13 @@ jobs:
     steps:
       - name: Deploying to server 1
         run: |
+          # Save the SSH key from secrets to a file named myKey2.pem
           echo "${{ secrets.SSH_KEY }}" > myKey1.pem
+          # Set the correct permissions for the SSH key file
           chmod 600 myKey1.pem
+          # Connect to the remote server using SSH and myKey that I added to github secrets
           ssh -i myKey1.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.NODE_1 }} << 'EOF'
+          # Exit immediately if a command exits
           set -e
           cd /capstone-project
           git pull https://github.com/Nightylol911/capstone-project.git
@@ -41,30 +45,3 @@ jobs:
           docker compose up -d --build
           rm -f myKey2.pem
           EOF
-# on:
-#   workflow_run:
-#     workflows: ["CI Pipeline"]
-#     branches: [main]
-#     types: 
-#       - completed
-
-# jobs:
-#   deploy:
-#     runs-on: self-hosted
-#     strategy:
-#       matrix:
-#         servers: ["10.0.2.202", "10.0.2.201"]
-    
-#     steps:
-#       - name: Deploying docker image to ${{ matrix.servers }}
-#         env:
-#           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-#           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-#         run: |
-#               ssh-keyscan -H ${{ matrix.servers }} >> ~/.ssh/known_hosts
-#               echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
-#               chmod 600 ~/.ssh/ssh_key
-#               ssh -i ~/.ssh/ssh_key $SSH_USERNAME@${{ matrix.servers }} "
-#               docker compose pull nightylol/flask-app && 
-#               docker compose up -d nightylol/flask-app && 
-#               docker image prune -f"
